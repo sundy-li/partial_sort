@@ -8,9 +8,10 @@ homepage = "https://github.com/sundy-li/partial_sort"
 description = "partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)"
 readme = "README.md"
 
+include = ["src/", "LICENSE-*", "README.md", "CHANGELOG.md", "COPYRIGHT"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = ">= 0.3, <= 0.5"
 
-[dev-dependencies]
+

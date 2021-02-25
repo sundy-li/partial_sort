@@ -2,8 +2,6 @@
 #![crate_name = "partial_sort"]
 #![cfg_attr(feature = "nightly", feature(test))]
 
-extern crate rand;
-
 use std::cmp::Ordering;
 use std::cmp::Ordering::Less;
 use std::ptr;
@@ -124,8 +122,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::PartialSort;
-    use rand::distributions::{Distribution, Range};
+    use PartialSort;
 
     #[test]
     fn empty_test() {
@@ -155,23 +152,22 @@ mod tests {
         assert_eq!(&d[0..last], &before.as_slice()[0..last]);
     }
 
-    #[test]
-    fn sorted_random_u64_test() {
-        let mut rng = rand::thread_rng();
-
-        let vec_size = 102400;
-        let partial_size = Range::new(0, vec_size).sample(&mut rng);
-
-        let between = Range::new(0u64, 1000000);
-        let mut data = (0u64..102400)
-            .map(|_| between.sample(&mut rng))
-            .collect::<Vec<u64>>();
-        let mut d = data.clone();
-        d.sort();
-
-        data.partial_sort(partial_size, |a, b| a.cmp(b));
-        assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
-    }
+    // #[test]
+    // fn sorted_random_u64_test() {
+    //     for i in (0..100) {
+    //         let mut rng = rand::thread_rng();
+    //
+    //         let vec_size = 102400;
+    //         let partial_size = (rng.next_u64() % vec_size) as usize;
+    //
+    //         let mut data = (0u64..102400).map(|_| rng.next_u64()).collect::<Vec<u64>>();
+    //         let mut d = data.clone();
+    //         d.sort();
+    //
+    //         data.partial_sort(partial_size, |a, b| a.cmp(b));
+    //         assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
+    //     }
+    // }
 }
 
 #[cfg(feature = "nightly")]

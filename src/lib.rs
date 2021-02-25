@@ -6,13 +6,31 @@ use std::cmp::Ordering;
 use std::cmp::Ordering::Less;
 use std::ptr;
 
-// use partial_sort::PartialSort;
-//
-// fn main() {
-//     let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
-//     vec.partial_sort(4, |a, b| a.cmp(b));
-//     println!("{:?}", vec);
-// }
+/// # partial_sort
+///
+/// [![Build Status](https://travis-ci.org/benashford/rust-partial_sort.svg?branch=master)](https://travis-ci.org/benashford/rust-partial_sort)
+/// [![](http://meritbadge.herokuapp.com/partial_sort)](https://crates.io/crates/partial_sort)
+/// [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
+/// [![](https://img.shields.io/crates/dv/partial_sort.svg)](https://crates.io/crates/partial_sort)
+/// [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
+///
+///
+/// partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)
+///
+/// ```toml
+/// [dependencies]
+/// partial_sort = "0.1.0"
+/// ```
+///
+///
+/// # Example
+/// ```
+/// # use partial_sort::PartialSort;
+///
+/// let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
+/// vec.partial_sort(4, |a, b| a.cmp(b));
+/// println!("{:?}", vec);
+/// ```
 
 pub trait PartialSort {
     type Item;

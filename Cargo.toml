@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["sundy-li <543950155@qq.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/sundy-li/partial_sort"
-description = "Lazy sorting for iterators"
+homepage = "https://github.com/sundy-li/partial_sort"
+description = "partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)"
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

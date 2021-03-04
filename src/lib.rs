@@ -11,7 +11,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! partial_sort = "0.1.0"
+//! partial_sort = "0.1.2"
 //! ```
 //!
 //!

@@ -1,6 +1,6 @@
 [package]
 name = "partial_sort"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["sundy-li <543950155@qq.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/sundy-li/partial_sort"
@@ -18,6 +18,6 @@ include = ["src/", "LICENSE-*", "README.md", "CHANGELOG.md", "COPYRIGHT"]
 criterion = "0.3"
 rand = "0.7"
 
-[[bench]]
-name = "sort"
-harness = false
+#[[bench]]
+#name = "sort"
+#harness = false

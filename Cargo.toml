@@ -14,4 +14,10 @@ include = ["src/", "LICENSE-*", "README.md", "CHANGELOG.md", "COPYRIGHT"]
 
 [dependencies]
 
+[dev-dependencies]
+criterion = "0.3"
+rand = "0.7"
 
+[[bench]]
+name = "sort"
+harness = false

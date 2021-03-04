@@ -1,6 +1,6 @@
 # partial_sort
 
-[![Build Status](https://travis-ci.org/benashford/rust-partial_sort.svg?branch=master)](https://travis-ci.org/benashford/rust-partial_sort)
+[![Build Status](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)
 [![](http://meritbadge.herokuapp.com/partial_sort)](https://crates.io/crates/partial_sort)
 [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
 [![](https://img.shields.io/crates/dv/partial_sort.svg)](https://crates.io/crates/partial_sort)

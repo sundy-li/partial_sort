@@ -1,36 +1,36 @@
+//! # partial_sort
+//!
+//! [![Build Status](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)
+//! [![](http://meritbadge.herokuapp.com/partial_sort)](https://crates.io/crates/partial_sort)
+//! [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
+//! [![](https://img.shields.io/crates/dv/partial_sort.svg)](https://crates.io/crates/partial_sort)
+//! [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
+//!
+//!
+//! partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)
+//!
+//! ```toml
+//! [dependencies]
+//! partial_sort = "0.1.0"
+//! ```
+//!
+//!
+//! # Example
+//! ```
+//! # use partial_sort::PartialSort;
+//!
+//! let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
+//! vec.partial_sort(4, |a, b| a.cmp(b));
+//! println!("{:?}", vec);
+//! ```
+
 #![crate_type = "lib"]
 #![crate_name = "partial_sort"]
 #![cfg_attr(feature = "nightly", feature(test))]
 
 use std::cmp::Ordering;
 use std::cmp::Ordering::Less;
-use std::ptr;
-
-/// # partial_sort
-///
-/// [![Build Status](https://travis-ci.org/benashford/rust-partial_sort.svg?branch=master)](https://travis-ci.org/benashford/rust-partial_sort)
-/// [![](http://meritbadge.herokuapp.com/partial_sort)](https://crates.io/crates/partial_sort)
-/// [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
-/// [![](https://img.shields.io/crates/dv/partial_sort.svg)](https://crates.io/crates/partial_sort)
-/// [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
-///
-///
-/// partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)
-///
-/// ```toml
-/// [dependencies]
-/// partial_sort = "0.1.0"
-/// ```
-///
-///
-/// # Example
-/// ```
-/// # use partial_sort::PartialSort;
-///
-/// let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
-/// vec.partial_sort(4, |a, b| a.cmp(b));
-/// println!("{:?}", vec);
-/// ```
+use std::{mem, ptr};
 
 pub trait PartialSort {
     type Item;
@@ -98,11 +98,15 @@ fn adjust_heap<T, F>(v: &mut [T], hole_index: usize, len: usize, is_less: &mut F
 where
     F: FnMut(&T, &T) -> bool,
 {
-    let mut hole_index = hole_index;
     let mut left_child = hole_index * 2 + 1;
 
     unsafe {
-        let value = ptr::read(v.get_unchecked(hole_index));
+        // All methods were benchmarked, and the 3rd showed best results. So we chose that one.
+        let mut tmp = mem::ManuallyDrop::new(ptr::read(&v[hole_index]));
+        let mut hole = InsertionHole {
+            src: &mut *tmp,
+            dest: &mut v[hole_index],
+        };
 
         while left_child < len {
             if left_child + 1 < len
@@ -111,17 +115,30 @@ where
                 left_child += 1;
             }
 
-            if is_less(&value, v.get_unchecked(left_child)) {
-                ptr::copy_nonoverlapping(&v[left_child], &mut v[hole_index], 1);
-                hole_index = left_child;
+            if is_less(&*tmp, v.get_unchecked(left_child)) {
+                ptr::copy_nonoverlapping(&v[left_child], hole.dest, 1);
+                hole.dest = &mut v[left_child];
             } else {
                 break;
             }
 
             left_child = left_child * 2 + 1;
         }
+    }
 
-        ptr::copy_nonoverlapping(&value, &mut v[hole_index], 1);
+    // COPY From std::sort_by
+    // When dropped, copies from `src` into `dest`.
+    struct InsertionHole<T> {
+        src: *mut T,
+        dest: *mut T,
+    }
+
+    impl<T> Drop for InsertionHole<T> {
+        fn drop(&mut self) {
+            unsafe {
+                ptr::copy_nonoverlapping(self.src, self.dest, 1);
+            }
+        }
     }
 }
 
@@ -140,6 +157,9 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::cmp::Ordering;
+    use std::fmt;
+    use std::sync::Arc;
     use PartialSort;
 
     #[test]
@@ -161,13 +181,83 @@ mod tests {
 
     #[test]
     fn sorted_strings_test() {
-        let mut before: Vec<&str> = vec!["a", "cat", "mat", "on", "sat", "the"];
+        let mut before: Vec<&str> = vec![
+            "a", "cat", "mat", "on", "sat", "the", "xxx", "xxxx", "fdadfdsf",
+        ];
         let last = 6;
         let mut d = before.clone();
         d.sort();
 
         before.partial_sort(last, |a, b| a.cmp(b));
         assert_eq!(&d[0..last], &before.as_slice()[0..last]);
+    }
+
+    #[test]
+    fn sorted_ref_test() {
+        trait TModel: fmt::Debug + Send + Sync {
+            fn size(&self) -> usize;
+        }
+
+        struct ModelFoo {
+            size: usize,
+        }
+
+        impl TModel for ModelFoo {
+            fn size(&self) -> usize {
+                return self.size;
+            }
+        }
+        impl fmt::Debug for ModelFoo {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "ModelFoo[{}]", self.size)?;
+                Ok(())
+            }
+        }
+
+        struct ModelBar {
+            size: usize,
+        }
+
+        impl TModel for ModelBar {
+            fn size(&self) -> usize {
+                return self.size;
+            }
+        }
+        impl fmt::Debug for ModelBar {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "ModelBar[{}]", self.size)?;
+                Ok(())
+            }
+        }
+
+        type ModelRef = Arc<dyn TModel>;
+
+        /// Compare two `Array`s based on the ordering defined in [ord](crate::array::ord).
+        fn cmp_model(a: &dyn TModel, b: &dyn TModel) -> Ordering {
+            return a.size().cmp(&b.size());
+        }
+
+        let mut before: Vec<(i32, ModelRef)> = vec![
+            (1i32, Arc::new(ModelBar { size: 100 })),
+            (1i32, Arc::new(ModelFoo { size: 99 })),
+            (1i32, Arc::new(ModelFoo { size: 101 })),
+            (1i32, Arc::new(ModelBar { size: 104 })),
+            (1i32, Arc::new(ModelBar { size: 10 })),
+            (1i32, Arc::new(ModelBar { size: 24 })),
+            (1i32, Arc::new(ModelBar { size: 34 })),
+            (1i32, Arc::new(ModelBar { size: 114 })),
+        ];
+
+        let last = 6;
+        let mut d = before.clone();
+        d.sort_by(|a, b| cmp_model(a.1.as_ref(), b.1.as_ref()));
+
+        before.partial_sort(last, |a, b| cmp_model(a.1.as_ref(), b.1.as_ref()));
+
+        &d[0..last].iter().zip(&before[0..last]).map(|(a, b)| {
+            assert_eq!(a.0, b.0);
+            assert_eq!(a.1.size(), b.1.size());
+        });
     }
 
     // #[test]

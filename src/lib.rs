@@ -157,13 +157,12 @@ where
 
 #[cfg(test)]
 mod tests {
+    use rand::Rng;
     use std::cmp::Ordering;
     use std::fmt;
     use std::sync::Arc;
-    use PartialSort;
 
-    extern crate rand;
-    use tests::rand::Rng;
+    use crate::PartialSort;
 
     #[test]
     fn empty_test() {
@@ -280,90 +279,5 @@ mod tests {
             data.partial_sort(partial_size, |a, b| a.cmp(b));
             assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
         }
-    }
-}
-
-#[cfg(feature = "nightly")]
-#[cfg(test)]
-mod benches {
-    extern crate rand;
-
-    extern crate test;
-
-    use self::test::{black_box, Bencher};
-
-    use self::rand::distributions::{Distribution, Range};
-
-    use crate::PartialSort;
-    use std::collections::BinaryHeap;
-
-    static RANGE: u64 = 1000000;
-    static VEC_SIZE: u64 = 50000;
-
-    fn data() -> Vec<u64> {
-        let mut rng = rand::thread_rng();
-        let between = Range::new(0u64, RANGE);
-        (0u64..VEC_SIZE).map(|_| between.sample(&mut rng)).collect()
-    }
-
-    #[bench]
-    fn c_standard_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let mut numbers = black_box(&input).clone();
-            numbers.sort();
-        });
-    }
-
-    #[bench]
-    fn c_partial_10_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let mut numbers = black_box(&input).clone();
-            numbers.partial_sort(10, |a, b| a.cmp(b));
-        });
-    }
-
-    #[bench]
-    fn c_partial_100_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let mut numbers = black_box(&input).clone();
-            numbers.partial_sort(100, |a, b| a.cmp(b));
-        });
-    }
-
-    #[bench]
-    fn c_partial_1000_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let mut numbers = black_box(&input).clone();
-            numbers.partial_sort(1000, |a, b| a.cmp(b));
-        });
-    }
-
-    #[bench]
-    fn c_partial_10000_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let mut numbers = black_box(&input).clone();
-            numbers.partial_sort(10000, |a, b| a.cmp(b));
-        });
-    }
-
-    #[bench]
-    fn c_heap_bench(b: &mut Bencher) {
-        let input = data();
-
-        b.iter(|| {
-            let numbers = black_box(&input).clone();
-            let h = BinaryHeap::from(numbers);
-            h.into_sorted_vec();
-        });
     }
 }

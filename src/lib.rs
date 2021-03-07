@@ -59,16 +59,16 @@ where
 
     make_heap(v, last, &mut is_less);
 
-    unsafe {
-        for i in last..v.len() {
+    for i in last..v.len() {
+        unsafe {
             if is_less(v.get_unchecked(i), v.get_unchecked(0)) {
                 v.swap(0, i);
                 adjust_heap(v, 0, last, &mut is_less);
             }
         }
-
-        sort_heap(v, last, &mut is_less);
     }
+
+    sort_heap(v, last, &mut is_less);
 }
 
 #[inline]
@@ -100,21 +100,36 @@ where
 {
     let mut left_child = hole_index * 2 + 1;
 
-    unsafe {
-        // All methods were benchmarked, and the 3rd showed best results. So we chose that one.
-        let mut tmp = mem::ManuallyDrop::new(ptr::read(&v[hole_index]));
-        let mut hole = InsertionHole {
-            src: &mut *tmp,
-            dest: &mut v[hole_index],
-        };
+    //SAFETY: we ensure hole_index point to a properly initialized value of type T
+    let mut tmp = unsafe { mem::ManuallyDrop::new(ptr::read(&v[hole_index])) };
+    let mut hole = InsertionHole {
+        src: &mut *tmp,
+        dest: &mut v[hole_index],
+    };
+    // Panic safety:
+    //
+    // If `is_less` panics at any point during the process, `hole` will get dropped and fill the
+    // hole in `v` with the unconsumed range in `buf`, thus ensuring that `v` still holds every
+    // object it initially held exactly once.
 
+    // SAFETY:
+    // we ensure src/dest point to a properly initialized value of type T
+    // src is valid for reads of `count * size_of::<T>()` bytes.
+    // dest is valid for reads of `count * size_of::<T>()` bytes.
+    // Both `src` and `dst` are properly aligned.
+
+    unsafe {
         while left_child < len {
+            // SAFETY:
+            // we ensure left_child and left_child + 1 are between [0, len)
             if left_child + 1 < len
                 && is_less(v.get_unchecked(left_child), v.get_unchecked(left_child + 1))
             {
                 left_child += 1;
             }
 
+            // SAFETY:
+            // left_child and hole.dest point to a properly initialized value of type T
             if is_less(&*tmp, v.get_unchecked(left_child)) {
                 ptr::copy_nonoverlapping(&v[left_child], hole.dest, 1);
                 hole.dest = &mut v[left_child];
@@ -126,7 +141,7 @@ where
         }
     }
 
-    // COPY From std::sort_by
+    // These codes is from std::sort_by
     // When dropped, copies from `src` into `dest`.
     struct InsertionHole<T> {
         src: *mut T,
@@ -135,6 +150,11 @@ where
 
     impl<T> Drop for InsertionHole<T> {
         fn drop(&mut self) {
+            // SAFETY:
+            // we ensure src/dest point to a properly initialized value of type T
+            // src is valid for reads of `count * size_of::<T>()` bytes.
+            // dest is valid for reads of `count * size_of::<T>()` bytes.
+            // Both `src` and `dst` are properly aligned.
             unsafe {
                 ptr::copy_nonoverlapping(self.src, self.dest, 1);
             }
@@ -143,7 +163,7 @@ where
 }
 
 #[inline]
-unsafe fn sort_heap<T, F>(v: &mut [T], last: usize, is_less: &mut F)
+fn sort_heap<T, F>(v: &mut [T], last: usize, is_less: &mut F)
 where
     F: FnMut(&T, &T) -> bool,
 {

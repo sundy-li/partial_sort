@@ -162,6 +162,9 @@ mod tests {
     use std::sync::Arc;
     use PartialSort;
 
+    extern crate rand;
+    use tests::rand::Rng;
+
     #[test]
     fn empty_test() {
         let mut before: Vec<u32> = vec![4, 4, 3, 3, 1, 1, 2, 2];
@@ -260,22 +263,24 @@ mod tests {
         });
     }
 
-    // #[test]
-    // fn sorted_random_u64_test() {
-    //     for i in (0..100) {
-    //         let mut rng = rand::thread_rng();
-    //
-    //         let vec_size = 102400;
-    //         let partial_size = (rng.next_u64() % vec_size) as usize;
-    //
-    //         let mut data = (0u64..102400).map(|_| rng.next_u64()).collect::<Vec<u64>>();
-    //         let mut d = data.clone();
-    //         d.sort();
-    //
-    //         data.partial_sort(partial_size, |a, b| a.cmp(b));
-    //         assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
-    //     }
-    // }
+    /// creates random initial vectors, partial sorts then and
+    /// verifies the result against std's `sort`.
+    #[test]
+    fn sorted_random_u64_test() {
+        for _ in 0..100 {
+            let mut rng = rand::thread_rng();
+            let vec_size = 1025;
+            let partial_size = (rng.gen::<u64>() % vec_size) as usize;
+            let mut data = (0u64..vec_size)
+                .map(|_| rng.gen::<u64>())
+                .collect::<Vec<u64>>();
+            let mut d = data.clone();
+            d.sort();
+
+            data.partial_sort(partial_size, |a, b| a.cmp(b));
+            assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
+        }
+    }
 }
 
 #[cfg(feature = "nightly")]

@@ -2,6 +2,8 @@ extern crate criterion;
 extern crate partial_sort;
 extern crate rand;
 
+use std::collections::BinaryHeap;
+
 use criterion::{criterion_group, criterion_main, Criterion};
 use partial_sort::PartialSort;
 use rand::distributions::{Distribution, Standard};
@@ -58,6 +60,14 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("stdsort 10000", |b| {
         b.iter(|| {
             v.sort_by(|a, b| a.cmp(b));
+        })
+    });
+
+    c.bench_function("heapsort 10000", |b| {
+        b.iter(|| {
+            let v = create_vec::<u64>(n);
+            let h = BinaryHeap::from(v);
+            h.into_sorted_vec();
         })
     });
 

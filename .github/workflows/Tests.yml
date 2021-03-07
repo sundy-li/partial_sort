@@ -17,3 +17,18 @@ jobs:
         id: make_test
         run: |
           make test
+
+  miri-checks:
+    name: Miri
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Install Rust
+        run: |
+          rustup toolchain install nightly-2021-01-19
+          rustup default nightly-2021-01-19
+          rustup component add rustfmt miri
+      - name: Run
+        run: |
+          make miri

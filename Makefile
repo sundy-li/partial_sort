@@ -1,6 +1,9 @@
 test:
 	cargo test -- --nocapture
 
+miri:
+	cargo miri test -- --nocapture
+
 bench:
 	cargo bench -- --nocapture
 
@@ -14,4 +17,4 @@ build:
 clean:
 	cargo clean
 
-.PHONY: test bench lint build clean
+.PHONY: test bench lint build clean miri

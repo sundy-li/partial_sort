@@ -1,5 +1,6 @@
 test:
 	cargo test -- --nocapture
+	cargo test -- --ignored -- --nocapture
 
 miri:
 	cargo miri test -- --nocapture

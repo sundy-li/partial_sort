@@ -60,11 +60,9 @@ where
     make_heap(v, last, &mut is_less);
 
     for i in last..v.len() {
-        unsafe {
-            if is_less(v.get_unchecked(i), v.get_unchecked(0)) {
-                v.swap(0, i);
-                adjust_heap(v, 0, last, &mut is_less);
-            }
+        if is_less(&v[i], &v[0]) {
+            v.swap(0, i);
+            adjust_heap(v, 0, last, &mut is_less);
         }
     }
 

@@ -23,7 +23,7 @@ fn main() {
 ```
 
 
-## benches
+## Benches
 First we compare what happens when sorting the entire vector:
 
 ```

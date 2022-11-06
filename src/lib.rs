@@ -55,7 +55,7 @@ pub fn partial_sort<T, F>(v: &mut [T], last: usize, mut is_less: F)
 where
     F: FnMut(&T, &T) -> bool,
 {
-    debug_assert!(last <= v.len());
+    assert!(last <= v.len());
 
     make_heap(v, last, &mut is_less);
 

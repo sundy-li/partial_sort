@@ -274,7 +274,7 @@ mod tests {
 
         before.partial_sort(last, |a, b| cmp_model(a.1.as_ref(), b.1.as_ref()));
 
-        &d[0..last].iter().zip(&before[0..last]).map(|(a, b)| {
+        d[0..last].iter().zip(&before[0..last]).for_each(|(a, b)| {
             assert_eq!(a.0, b.0);
             assert_eq!(a.1.size(), b.1.size());
         });

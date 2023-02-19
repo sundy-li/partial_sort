@@ -159,15 +159,14 @@ where
 }
 
 #[inline]
-fn sort_heap<T, F>(v: &mut [T], last: usize, is_less: &mut F)
+fn sort_heap<T, F>(v: &mut [T], mut last: usize, is_less: &mut F)
 where
     F: FnMut(&T, &T) -> bool,
 {
-    let mut last = last;
     while last > 1 {
-        v.swap(0, last - 1);
-        adjust_heap(v, 0, last - 1, is_less);
         last -= 1;
+        v.swap(0, last);
+        adjust_heap(v, 0, last, is_less);
     }
 }
 

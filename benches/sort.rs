@@ -25,7 +25,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.partial_sort(20, |a, b| a.cmp(b)),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -33,7 +33,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.partial_sort(200, |a, b| a.cmp(b)),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -41,7 +41,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.partial_sort(2000, |a, b| a.cmp(b)),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -49,7 +49,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.partial_sort(10000, |a, b| a.cmp(b)),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -57,7 +57,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.sort_by(|a, b| a.cmp(b)),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -65,7 +65,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched(
             || create_vec::<u64>(n),
             |v| BinaryHeap::from(v).into_sorted_vec(),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -73,7 +73,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.partial_sort(20, |a, b| a.cmp(b).reverse()),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 
@@ -81,7 +81,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| v.sort_by(|a, b| a.cmp(b).reverse()),
-            BatchSize::SmallInput
+            BatchSize::SmallInput,
         )
     });
 }

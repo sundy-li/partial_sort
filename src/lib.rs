@@ -121,7 +121,10 @@ where
             // SAFETY:
             // we ensure left_child and left_child + 1 are between [0, len)
             if left_child + 1 < len {
-                left_child += usize::from(is_less(v.get_unchecked(left_child), v.get_unchecked(left_child + 1)));
+                left_child += usize::from(is_less(
+                    v.get_unchecked(left_child),
+                    v.get_unchecked(left_child + 1),
+                ));
             }
 
             // SAFETY:

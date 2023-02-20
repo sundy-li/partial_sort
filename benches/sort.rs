@@ -4,7 +4,7 @@ extern crate rand;
 
 use std::collections::BinaryHeap;
 
-use criterion::{BatchSize, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use partial_sort::PartialSort;
 use rand::distributions::{Distribution, Standard};
 use rand::rngs::StdRng;

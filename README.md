@@ -24,15 +24,18 @@ fn main() {
 
 
 ## Benches
-First we compare what happens when sorting the entire vector:
+First we compare what happens when sorting the entire vector (in Macbook pro M1Max):
 
 ```
-test benches::c_heap_bench          ... bench:   3,109,923 ns/iter (+/- 1,142,674)
-test benches::c_partial_10000_bench ... bench:   2,052,967 ns/iter (+/- 84,947)
-test benches::c_partial_1000_bench  ... bench:   2,075,428 ns/iter (+/- 661,595)
-test benches::c_partial_100_bench   ... bench:     331,775 ns/iter (+/- 46,151)
-test benches::c_partial_10_bench    ... bench:      36,194 ns/iter (+/- 14,282)
-test benches::c_standard_bench      ... bench:   3,022,585 ns/iter (+/- 160,972)
+partial sort 10000 limit 20                 time:   [5.2093 µs 5.2470 µs 5.2892 µs]
+partial sort 10000 limit 200                time:   [15.742 µs 16.116 µs 16.645 µs]
+partial sort 10000 limit 2000               time:   [117.99 µs 119.59 µs 121.32 µs]
+partial sort 10000 limit 10000              time:   [281.40 µs 287.69 µs 295.43 µs]
+stdsort 10000                               time:   [363.75 µs 366.93 µs 371.06 µs]
+heapsort 10000                              time:   [253.89 µs 256.02 µs 258.35 µs]
+
+partial reverse sort 10000 limit 20         time:   [5.7620 µs 6.0627 µs 6.5347 µs]
+stdsort reverse 10000                       time:   [347.39 µs 355.88 µs 369.46 µs]
 ```
 
 

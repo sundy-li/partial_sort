@@ -120,10 +120,11 @@ where
         while left_child < len {
             // SAFETY:
             // we ensure left_child and left_child + 1 are between [0, len)
-            if left_child + 1 < len
-                && is_less(v.get_unchecked(left_child), v.get_unchecked(left_child + 1))
-            {
-                left_child += 1;
+            if left_child + 1 < len {
+                left_child += usize::from(is_less(
+                    v.get_unchecked(left_child),
+                    v.get_unchecked(left_child + 1),
+                ));
             }
 
             // SAFETY:
@@ -161,15 +162,14 @@ where
 }
 
 #[inline]
-fn sort_heap<T, F>(v: &mut [T], last: usize, is_less: &mut F)
+fn sort_heap<T, F>(v: &mut [T], mut last: usize, is_less: &mut F)
 where
     F: FnMut(&T, &T) -> bool,
 {
-    let mut last = last;
     while last > 1 {
-        v.swap(0, last - 1);
-        adjust_heap(v, 0, last - 1, is_less);
         last -= 1;
+        v.swap(0, last);
+        adjust_heap(v, 0, last, is_less);
     }
 }
 
@@ -274,7 +274,7 @@ mod tests {
 
         before.partial_sort(last, |a, b| cmp_model(a.1.as_ref(), b.1.as_ref()));
 
-        &d[0..last].iter().zip(&before[0..last]).map(|(a, b)| {
+        d[0..last].iter().zip(&before[0..last]).for_each(|(a, b)| {
             assert_eq!(a.0, b.0);
             assert_eq!(a.1.size(), b.1.size());
         });

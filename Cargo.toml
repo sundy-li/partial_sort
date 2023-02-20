@@ -22,6 +22,7 @@ edition = "2018"
 criterion = "0.3"
 rand = "0.7"
 
-[[bench]]
-name = "sort"
-harness = false
+# Uncomment this if you want to do benchmark
+# [[bench]]
+# name = "sort"
+# harness = false

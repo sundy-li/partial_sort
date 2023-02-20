@@ -1,6 +1,6 @@
 [package]
 name = "partial_sort"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["sundy-li <543950155@qq.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/sundy-li/partial_sort"

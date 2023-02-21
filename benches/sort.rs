@@ -61,6 +61,14 @@ fn criterion_benchmark(c: &mut Criterion) {
         )
     });
 
+    c.bench_function("unstable stdsort 10000", |b| {
+        b.iter_batched_ref(
+            || create_vec::<u64>(n),
+            |v| v.sort_unstable_by(|a, b| a.cmp(b)),
+            BatchSize::SmallInput,
+        )
+    });
+
     c.bench_function("heapsort 10000", |b| {
         b.iter_batched(
             || create_vec::<u64>(n),

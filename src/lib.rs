@@ -101,10 +101,10 @@ where
 
     let mut left_child = hole_index * 2 + 1;
 
-    //SAFETY: we ensure hole_index point to a properly initialized value of type T
-    let mut tmp = unsafe { mem::ManuallyDrop::new(ptr::read(&v[hole_index])) };
+    // SAFETY: we ensure hole_index point to a properly initialized value of type T
+    let tmp = mem::ManuallyDrop::new(unsafe { ptr::read(&v[hole_index]) });
     let mut hole = InsertionHole {
-        src: &mut *tmp,
+        src: &*tmp,
         dest: &mut v[hole_index],
     };
     // Panic safety:
@@ -146,7 +146,7 @@ where
     // These codes is from std::sort_by
     // When dropped, copies from `src` into `dest`.
     struct InsertionHole<T> {
-        src: *mut T,
+        src: *const T,
         dest: *mut T,
     }
 

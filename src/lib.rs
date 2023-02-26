@@ -101,50 +101,48 @@ where
 
     let mut left_child = hole_index * 2 + 1;
 
-    // SAFETY: we ensure hole_index point to a properly initialized value of type T
+    // SAFETY: Reading from a reference is always valid. The original memory
+    // location is now conceptually moved-from. At the end of the function,
+    // or if `is_less()` panics at any point, `hole` is dropped and fills
+    // the moved-from location with a valid element.
     let tmp = mem::ManuallyDrop::new(unsafe { ptr::read(&v[hole_index]) });
     let mut hole = InsertionHole {
         src: &*tmp,
         dest: &mut v[hole_index],
     };
-    // Panic safety:
-    //
-    // If `is_less` panics at any point during the process, `hole` will get dropped and fill the
-    // hole in `v` with the unconsumed range in `buf`, thus ensuring that `v` still holds every
-    // object it initially held exactly once.
 
-    // SAFETY:
-    // we ensure src/dest point to a properly initialized value of type T
-    // src is valid for reads of `count * size_of::<T>()` bytes.
-    // dest is valid for reads of `count * size_of::<T>()` bytes.
-    // Both `src` and `dst` are properly aligned.
-
-    unsafe {
-        while left_child < len {
-            // SAFETY:
-            // we ensure left_child and left_child + 1 are between [0, len)
-            if left_child + 1 < len {
-                left_child += usize::from(is_less(
-                    v.get_unchecked(left_child),
-                    v.get_unchecked(left_child + 1),
-                ));
-            }
-
-            // SAFETY:
-            // left_child and hole.dest point to a properly initialized value of type T
-            if is_less(&*tmp, v.get_unchecked(left_child)) {
-                ptr::copy_nonoverlapping(&v[left_child], hole.dest, 1);
-                hole.dest = &mut v[left_child];
-            } else {
-                break;
-            }
-
-            left_child = left_child * 2 + 1;
+    while left_child < len {
+        if left_child + 1 < len {
+            left_child += usize::from(is_less(
+                unsafe { v.get_unchecked(left_child) }, // SAFETY: left_child < len
+                unsafe { v.get_unchecked(left_child + 1) }, // SAFETY: left_child + 1 < len
+            ));
         }
+
+        // SAFETY: left_child (even incremented) is still in bounds.
+        if !is_less(&*tmp, unsafe { v.get_unchecked(left_child) }) {
+            break;
+        }
+
+        // SAFETY: Source and destination are references. Now the location
+        // at index left_child is conceptually moved-from and `hole` is updated
+        // accordingly. At the end of the function, or if `is_less()` panics
+        // at any point, `hole` is dropped and fills the moved-from location
+        // with a valid element.
+        unsafe {
+            ptr::copy_nonoverlapping(
+                v.get_unchecked(left_child), // SAFETY: still in bounds
+                hole.dest,
+                1,
+            );
+        }
+        hole.dest = &mut v[left_child];
+
+        left_child = left_child * 2 + 1;
     }
 
-    // These codes is from std::sort_by
-    // When dropped, copies from `src` into `dest`.
+    // When dropped, copies from `src` into `dest`. Adapted from
+    // `std::sort_by()`.
     struct InsertionHole<T> {
         src: *const T,
         dest: *mut T,
@@ -152,11 +150,8 @@ where
 
     impl<T> Drop for InsertionHole<T> {
         fn drop(&mut self) {
-            // SAFETY:
-            // we ensure src/dest point to a properly initialized value of type T
-            // src is valid for reads of `count * size_of::<T>()` bytes.
-            // dest is valid for reads of `count * size_of::<T>()` bytes.
-            // Both `src` and `dst` are properly aligned.
+            // SAFETY: `self.src` and `self.dest` have been created from
+            // references.
             unsafe {
                 ptr::copy_nonoverlapping(self.src, self.dest, 1);
             }

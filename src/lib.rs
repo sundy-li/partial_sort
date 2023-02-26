@@ -96,6 +96,9 @@ fn adjust_heap<T, F>(v: &mut [T], hole_index: usize, len: usize, is_less: &mut F
 where
     F: FnMut(&T, &T) -> bool,
 {
+    assert!(len <= v.len());
+    assert!(hole_index < v.len());
+
     let mut left_child = hole_index * 2 + 1;
 
     //SAFETY: we ensure hole_index point to a properly initialized value of type T

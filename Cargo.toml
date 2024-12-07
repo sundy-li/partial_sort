@@ -1,7 +1,7 @@
 [package]
 name = "partial_sort"
 edition = "2018"
-version = "0.2.1"
+version = "1.0.0"
 authors = ["sundy-li <543950155@qq.com>"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/sundy-li/partial_sort"
@@ -20,6 +20,6 @@ criterion = "0.5.1"
 rand = "0.8.5"
 
 # Uncomment this if you want to do benchmark
-# [[bench]]
-# name = "sort"
-# harness = false
+[[bench]]
+name = "sort"
+harness = false

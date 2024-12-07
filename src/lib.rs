@@ -18,7 +18,7 @@
 //!
 //! let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
 //! vec.partial_sort(4, |a, b| a.cmp(b));
-//! println!("{:?}", vec);
+//! assert_eq!(&vec[0..4], &[1, 1, 2, 2]);
 //! ```
 
 #![crate_type = "lib"]

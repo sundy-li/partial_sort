@@ -1,6 +1,6 @@
 # partial_sort
 
-[![](https://img.shields.io/crates/v/logforth.svg)](https://crates.io/crates/logforth)
+[![](https://img.shields.io/crates/v/partial_sort.svg)](https://crates.io/crates/partial_sort)
 [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
 [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
 [![](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)
@@ -15,21 +15,22 @@ use partial_sort::PartialSort;
 fn main() {
     let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
     vec.partial_sort(4, |a, b| a.cmp(b));
-    println!("{:?}", vec);
+    assert_eq!(&vec[0..4], &[1, 1, 2, 2]);
 }
 ```
 
 
 ## Benches
 
-First we compare what happens when sorting the entire vector
+First we compare what happens when sorting the entire vector.
 
 Bench env:
+
 ```
-❯ uname -a
+$ uname -a
 Linux arch 6.8.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Wed, 17 Apr 2024 15:20:28 +0000 x86_64 GNU/Linux
 
-❯ cat /proc/cpuinfo | grep '\-Core' | head -1
+$ cat /proc/cpuinfo | grep '\-Core' | head -1
 model name      : AMD Ryzen 9 5950X 16-Core Processor
 ```
 
@@ -47,7 +48,6 @@ heapsort 10000                          time:   [241.86 µs 242.09 µs 242.29 µ
 partial reverse sort 10000 limit 20     time:   [5.4574 µs 5.4696 µs 5.4843 µs]
 stdsort reverse 10000                   time:   [82.680 µs 82.751 µs 82.822 µs]
 ```
-
 
 ## License
 

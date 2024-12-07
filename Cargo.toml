@@ -1,26 +1,23 @@
 [package]
 name = "partial_sort"
-version = "0.2.0"
+edition = "2018"
+version = "0.2.1"
 authors = ["sundy-li <543950155@qq.com>"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/sundy-li/partial_sort"
 homepage = "https://github.com/sundy-li/partial_sort"
-description = "partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)"
+description = "This library provide a Rust version std::partial_sort"
 readme = "README.md"
 
-include = ["src/", "LICENSE-*", "README.md", "CHANGELOG.md", "COPYRIGHT"]
+include = ["src/", "LICENSE-*", "README.md"]
 
 [lib]
 name = "partial_sort"
 bench = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-edition = "2018"
-[dependencies]
-
 [dev-dependencies]
-criterion = "0.3"
-rand = "0.7"
+criterion = "0.5.1"
+rand = "0.8.5"
 
 # Uncomment this if you want to do benchmark
 # [[bench]]

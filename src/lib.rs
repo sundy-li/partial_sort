@@ -1,22 +1,19 @@
 //! # partial_sort
 //!
-//! [![Build Status](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)
-//! [![](http://meritbadge.herokuapp.com/partial_sort)](https://crates.io/crates/partial_sort)
+//! [![](https://img.shields.io/crates/v/logforth.svg)](https://crates.io/crates/logforth)
 //! [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
-//! [![](https://img.shields.io/crates/dv/partial_sort.svg)](https://crates.io/crates/partial_sort)
 //! [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
-//!
+//! [![](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)
 //!
 //! partial_sort is Rust version of [std::partial_sort](https://en.cppreference.com/w/cpp/algorithm/partial_sort)
 //!
-//! ```toml
-//! [dependencies]
-//! partial_sort = "0.1.2"
+//! ```shell
+//! cargo add partial_sort
 //! ```
 //!
+//! ## Example
 //!
-//! # Example
-//! ```
+//! ```rust
 //! # use partial_sort::PartialSort;
 //!
 //! let mut vec = vec![4, 4, 3, 3, 1, 1, 2, 2];
@@ -26,7 +23,6 @@
 
 #![crate_type = "lib"]
 #![crate_name = "partial_sort"]
-#![cfg_attr(feature = "nightly", feature(test))]
 
 use std::cmp::Ordering;
 use std::cmp::Ordering::Less;
@@ -35,7 +31,9 @@ use std::{mem, ptr};
 pub trait PartialSort {
     type Item;
 
-    fn partial_sort<F>(&mut self, _: usize, _: F)
+    /// Rearranges elements such that the range `[0, last)` contains the smallest `last` elements
+    /// in the range `[0, n)` in ascending order.
+    fn partial_sort<F>(&mut self, last: usize, cmp: F)
     where
         F: FnMut(&Self::Item, &Self::Item) -> Ordering;
 }
@@ -222,7 +220,7 @@ mod tests {
 
         impl TModel for ModelFoo {
             fn size(&self) -> usize {
-                return self.size;
+                self.size
             }
         }
         impl fmt::Debug for ModelFoo {
@@ -238,7 +236,7 @@ mod tests {
 
         impl TModel for ModelBar {
             fn size(&self) -> usize {
-                return self.size;
+                self.size
             }
         }
         impl fmt::Debug for ModelBar {
@@ -252,7 +250,7 @@ mod tests {
 
         /// Compare two `Array`s based on the ordering defined in [ord](crate::array::ord).
         fn cmp_model(a: &dyn TModel, b: &dyn TModel) -> Ordering {
-            return a.size().cmp(&b.size());
+            a.size().cmp(&b.size())
         }
 
         let mut before: Vec<(i32, ModelRef)> = vec![

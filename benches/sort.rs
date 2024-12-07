@@ -54,17 +54,13 @@ fn criterion_benchmark(c: &mut Criterion) {
     });
 
     c.bench_function("stdsort 10000", |b| {
-        b.iter_batched_ref(
-            || create_vec::<u64>(n),
-            |v| v.sort_by(|a, b| a.cmp(b)),
-            BatchSize::SmallInput,
-        )
+        b.iter_batched_ref(|| create_vec::<u64>(n), |v| v.sort(), BatchSize::SmallInput)
     });
 
     c.bench_function("unstable stdsort 10000", |b| {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
-            |v| v.sort_unstable_by(|a, b| a.cmp(b)),
+            |v| v.sort_unstable(),
             BatchSize::SmallInput,
         )
     });

@@ -23,7 +23,6 @@
 
 #![crate_type = "lib"]
 #![crate_name = "partial_sort"]
-#![cfg_attr(feature = "nightly", feature(test))]
 
 use std::cmp::Ordering;
 use std::cmp::Ordering::Less;

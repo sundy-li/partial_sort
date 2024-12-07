@@ -21,6 +21,17 @@ where
 fn criterion_benchmark(c: &mut Criterion) {
     let n = 10000;
 
+    c.bench_function("nth_select sort 10000 limit 20", |b| {
+        b.iter_batched_ref(
+            || create_vec::<u64>(n),
+            |v| {
+                let (p, _, _) = v.select_nth_unstable(20);
+                p.sort_unstable();
+            },
+            BatchSize::SmallInput,
+        )
+    });
+
     c.bench_function("partial sort 10000 limit 20", |b| {
         b.iter_batched_ref(
             || create_vec::<u64>(n),

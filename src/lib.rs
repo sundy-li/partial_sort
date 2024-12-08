@@ -1,6 +1,5 @@
 //! # partial_sort
 //!
-//! [![](https://img.shields.io/crates/v/logforth.svg)](https://crates.io/crates/logforth)
 //! [![](https://img.shields.io/crates/d/partial_sort.svg)](https://crates.io/crates/partial_sort)
 //! [![](https://docs.rs/partial_sort/badge.svg)](https://docs.rs/partial_sort/)
 //! [![](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml/badge.svg)](https://github.com/sundy-li/partial_sort/actions/workflows/Build.yml)

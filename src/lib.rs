@@ -25,7 +25,7 @@
 
 use std::cmp::Ordering;
 use std::cmp::Ordering::Less;
-use std::{mem, ptr};
+use std::{mem::ManuallyDrop, ptr};
 
 pub trait PartialSort {
     type Item;
@@ -102,9 +102,8 @@ where
     // location is now conceptually moved-from. At the end of the function,
     // or if `is_less()` panics at any point, `hole` is dropped and fills
     // the moved-from location with a valid element.
-    let tmp = mem::ManuallyDrop::new(unsafe { ptr::read(&v[hole_index]) });
     let mut hole = InsertionHole {
-        src: &*tmp,
+        src: ManuallyDrop::new(unsafe { ptr::read(&v[hole_index]) }),
         dest: &mut v[hole_index],
     };
 
@@ -117,7 +116,7 @@ where
         }
 
         // SAFETY: left_child (even incremented) is still in bounds.
-        if !is_less(&*tmp, unsafe { v.get_unchecked(left_child) }) {
+        if !is_less(&*hole.src, unsafe { v.get_unchecked(left_child) }) {
             break;
         }
 
@@ -141,16 +140,17 @@ where
     // When dropped, copies from `src` into `dest`. Adapted from
     // `std::sort_by()`.
     struct InsertionHole<T> {
-        src: *const T,
+        src: ManuallyDrop<T>,
         dest: *mut T,
     }
 
     impl<T> Drop for InsertionHole<T> {
         fn drop(&mut self) {
-            // SAFETY: `self.src` and `self.dest` have been created from
-            // references.
+            // SAFETY: Source pointer is created from reference and outside
+            // of the vector. `self.dest` has been created from reference
+            // and is inside the vector.
             unsafe {
-                ptr::copy_nonoverlapping(self.src, self.dest, 1);
+                ptr::copy_nonoverlapping(&*self.src, self.dest, 1);
             }
         }
     }

@@ -71,19 +71,12 @@ fn make_heap<T, F>(v: &mut [T], last: usize, is_less: &mut F)
 where
     F: FnMut(&T, &T) -> bool,
 {
-    if last < 2 {
-        return;
-    }
-
     let len = last;
-    let mut parent = (len - 2) / 2;
+    let mut parent = len / 2;
 
-    loop {
-        adjust_heap(v, parent, len, is_less);
-        if parent == 0 {
-            return;
-        }
+    while parent > 0 {
         parent -= 1;
+        adjust_heap(v, parent, len, is_less);
     }
 }
 

@@ -25,7 +25,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter_batched_ref(
             || create_vec::<u64>(n),
             |v| {
-                let (p, _, _) = v.select_nth_unstable(20);
+                let (p, _, _) = v.select_nth_unstable(20 - 1);
                 p.sort_unstable();
             },
             BatchSize::SmallInput,

@@ -302,4 +302,11 @@ mod tests {
             assert_eq!(&d[0..partial_size], &data.as_slice()[0..partial_size]);
         }
     }
+
+    #[test]
+    #[should_panic]
+    fn is_less_panic() {
+        let mut v = vec![0, 1];
+        v.partial_sort(2, |_, _| panic!("boom"));
+    }
 }
